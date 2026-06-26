@@ -1,4 +1,5 @@
 import { type MessageFormatElement, TYPE } from "@formatjs/icu-messageformat-parser";
+import { markupEnd, markupStandalone, markupStart } from "./markup.js";
 import { parseIcu } from "./parse.js";
 
 export interface ImportedMessage {
@@ -193,6 +194,14 @@ function mapSimple(el: MessageFormatElement, ctx: Ctx, poundArg: string | null):
           annotation: { type: "function-reference", name: fn, options },
         },
       ];
+    }
+    case TYPE.tag: {
+      // biome-ignore lint/suspicious/noExplicitAny: FormatJS AST cast — TagElement carries .value/.children
+      const name = (el as any).value as string;
+      // biome-ignore lint/suspicious/noExplicitAny: FormatJS AST cast — TagElement carries .value/.children
+      const children = ((el as any).children ?? []) as MessageFormatElement[];
+      if (children.length === 0) return [markupStandalone(name)];
+      return [markupStart(name), ...mapSimpleList(children, ctx, poundArg), markupEnd(name)];
     }
     default:
       throw new Error(`mapSimple: type non géré ${el.type} (markup ajouté en Task 6)`);
