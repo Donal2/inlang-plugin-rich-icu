@@ -64,7 +64,12 @@ export const richIcuPlugin: InlangPlugin = {
     for (const message of messages) {
       const bundle = bundles.find((b) => b.id === message.bundleId);
       if (!bundle) continue;
-      const vs = variants.filter((v) => v.messageId === message.id);
+      // biome-ignore lint/suspicious/noExplicitAny: supports both SDK Variant shape (messageId) and import shape (messageBundleId/messageLocale)
+      const vs = variants.filter((v: any) =>
+        message.id != null && v.messageId != null
+          ? v.messageId === message.id
+          : v.messageBundleId === message.bundleId && v.messageLocale === message.locale,
+      );
       if (!byLocale[message.locale]) byLocale[message.locale] = {};
       byLocale[message.locale][message.bundleId] = bundleToMessageString({
         bundle,
