@@ -1,0 +1,42 @@
+{
+  "name": "inlang-plugin-rich-icu",
+  "version": "0.1.0",
+  "description": "inlang storage plugin: inline ICU MessageFormat with rich-text markup tags preserved as first-class inlang markup parts.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "lint": "biome check .",
+    "format": "biome format --write ."
+  },
+  "keywords": ["inlang", "paraglide", "icu", "i18n", "messageformat"],
+  "peerDependencies": {
+    "@inlang/sdk": "*"
+  },
+  "dependencies": {
+    "@formatjs/icu-messageformat-parser": "^2"
+  },
+  "devDependencies": {
+    "@inlang/sdk": "2.10.2",
+    "@inlang/plugin-icu1": "^1",
+    "@biomejs/biome": "^1",
+    "tsup": "^8",
+    "typescript": "^5",
+    "vitest": "^2"
+  },
+  "engines": { "node": ">=20" },
+  "repository": "github:Donal2/inlang-plugin-rich-icu",
+  "license": "MIT",
+  "author": "Donald <donald@geneinfo.pro>",
+  "packageManager": "pnpm@11.9.0"
+}
