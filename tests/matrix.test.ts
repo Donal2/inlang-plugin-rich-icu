@@ -56,20 +56,21 @@ describe("M1 matrice", () => {
     });
   });
 
-  it("=0 exact → second sélecteur Exact + matches combinés", () => {
+  it("=0 exact → sélecteur Exact EN PREMIER + matches combinés (parité icu1)", () => {
     const r = imp("{count, plural, =0 {rien} one {#} other {#}}");
+    // icu1: exact selector first, plural selector second; exact name = `${pluralName}Exact`
     // biome-ignore lint/suspicious/noExplicitAny: test helper — navigates dynamic AST
-    expect(r.selectors.map((s: any) => s.name)).toEqual(["countPlural", "countExact"]);
+    expect(r.selectors.map((s: any) => s.name)).toEqual(["countPluralExact", "countPlural"]);
     // biome-ignore lint/suspicious/noExplicitAny: test helper — navigates dynamic AST
     const v0 = r.variants.find((v: any) =>
       v.matches.some(
         // biome-ignore lint/suspicious/noExplicitAny: test helper — navigates dynamic AST
-        (m: any) => m.type === "literal-match" && m.key === "countExact" && m.value === "0",
+        (m: any) => m.type === "literal-match" && m.key === "countPluralExact" && m.value === "0",
       ),
     );
     // biome-ignore lint/style/noNonNullAssertion: v0 guaranteed to exist by preceding assertion logic
     expect(v0!.matches).toEqual([
-      { type: "literal-match", key: "countExact", value: "0" },
+      { type: "literal-match", key: "countPluralExact", value: "0" },
       { type: "catchall-match", key: "countPlural" },
     ]);
   });

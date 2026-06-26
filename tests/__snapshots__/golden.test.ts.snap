@@ -1,0 +1,467 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`M4 golden fixtures > snapshot AST: credit 1`] = `
+{
+  "declarations": [
+    {
+      "name": "count",
+      "type": "input-variable",
+    },
+    {
+      "name": "countPlural",
+      "type": "local-variable",
+      "value": {
+        "annotation": {
+          "name": "plural",
+          "options": [],
+          "type": "function-reference",
+        },
+        "arg": {
+          "name": "count",
+          "type": "variable-reference",
+        },
+        "type": "expression",
+      },
+    },
+    {
+      "name": "countPluralExact",
+      "type": "local-variable",
+      "value": {
+        "arg": {
+          "name": "count",
+          "type": "variable-reference",
+        },
+        "type": "expression",
+      },
+    },
+  ],
+  "selectors": [
+    {
+      "name": "countPluralExact",
+      "type": "variable-reference",
+    },
+    {
+      "name": "countPlural",
+      "type": "variable-reference",
+    },
+  ],
+  "variants": [
+    {
+      "matches": [
+        {
+          "key": "countPluralExact",
+          "type": "literal-match",
+          "value": "0",
+        },
+        {
+          "key": "countPlural",
+          "type": "catchall-match",
+        },
+      ],
+      "pattern": [
+        {
+          "type": "text",
+          "value": "Vous n'avez plus de ",
+        },
+        {
+          "name": "strong",
+          "type": "markup-start",
+        },
+        {
+          "type": "text",
+          "value": "crédit",
+        },
+        {
+          "name": "strong",
+          "type": "markup-end",
+        },
+        {
+          "type": "text",
+          "value": ". ",
+        },
+        {
+          "name": "link",
+          "type": "markup-start",
+        },
+        {
+          "type": "text",
+          "value": "Rechargez votre compte",
+        },
+        {
+          "name": "link",
+          "type": "markup-end",
+        },
+        {
+          "type": "text",
+          "value": ".",
+        },
+      ],
+    },
+    {
+      "matches": [
+        {
+          "key": "countPluralExact",
+          "type": "catchall-match",
+        },
+        {
+          "key": "countPlural",
+          "type": "literal-match",
+          "value": "one",
+        },
+      ],
+      "pattern": [
+        {
+          "type": "text",
+          "value": "Il vous reste ",
+        },
+        {
+          "name": "strong",
+          "type": "markup-start",
+        },
+        {
+          "annotation": {
+            "name": "icu:pound",
+            "options": [],
+            "type": "function-reference",
+          },
+          "arg": {
+            "name": "count",
+            "type": "variable-reference",
+          },
+          "type": "expression",
+        },
+        {
+          "type": "text",
+          "value": " crédit",
+        },
+        {
+          "name": "strong",
+          "type": "markup-end",
+        },
+        {
+          "type": "text",
+          "value": ".",
+        },
+      ],
+    },
+    {
+      "matches": [
+        {
+          "key": "countPluralExact",
+          "type": "catchall-match",
+        },
+        {
+          "key": "countPlural",
+          "type": "catchall-match",
+        },
+      ],
+      "pattern": [
+        {
+          "type": "text",
+          "value": "Il vous reste ",
+        },
+        {
+          "name": "strong",
+          "type": "markup-start",
+        },
+        {
+          "annotation": {
+            "name": "icu:pound",
+            "options": [],
+            "type": "function-reference",
+          },
+          "arg": {
+            "name": "count",
+            "type": "variable-reference",
+          },
+          "type": "expression",
+        },
+        {
+          "type": "text",
+          "value": " crédits",
+        },
+        {
+          "name": "strong",
+          "type": "markup-end",
+        },
+        {
+          "type": "text",
+          "value": ".",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`M4 golden fixtures > snapshot AST: resumeCount 1`] = `
+{
+  "declarations": [
+    {
+      "name": "count",
+      "type": "input-variable",
+    },
+    {
+      "name": "countPlural",
+      "type": "local-variable",
+      "value": {
+        "annotation": {
+          "name": "plural",
+          "options": [],
+          "type": "function-reference",
+        },
+        "arg": {
+          "name": "count",
+          "type": "variable-reference",
+        },
+        "type": "expression",
+      },
+    },
+  ],
+  "selectors": [
+    {
+      "name": "countPlural",
+      "type": "variable-reference",
+    },
+  ],
+  "variants": [
+    {
+      "matches": [
+        {
+          "key": "countPlural",
+          "type": "literal-match",
+          "value": "one",
+        },
+      ],
+      "pattern": [
+        {
+          "type": "text",
+          "value": "Vous avez ",
+        },
+        {
+          "name": "strong",
+          "type": "markup-start",
+        },
+        {
+          "annotation": {
+            "name": "icu:pound",
+            "options": [],
+            "type": "function-reference",
+          },
+          "arg": {
+            "name": "count",
+            "type": "variable-reference",
+          },
+          "type": "expression",
+        },
+        {
+          "type": "text",
+          "value": " CV",
+        },
+        {
+          "name": "strong",
+          "type": "markup-end",
+        },
+        {
+          "type": "text",
+          "value": " dans votre compte.",
+        },
+      ],
+    },
+    {
+      "matches": [
+        {
+          "key": "countPlural",
+          "type": "catchall-match",
+        },
+      ],
+      "pattern": [
+        {
+          "type": "text",
+          "value": "Vous avez ",
+        },
+        {
+          "name": "strong",
+          "type": "markup-start",
+        },
+        {
+          "annotation": {
+            "name": "icu:pound",
+            "options": [],
+            "type": "function-reference",
+          },
+          "arg": {
+            "name": "count",
+            "type": "variable-reference",
+          },
+          "type": "expression",
+        },
+        {
+          "type": "text",
+          "value": " CV",
+        },
+        {
+          "name": "strong",
+          "type": "markup-end",
+        },
+        {
+          "type": "text",
+          "value": " dans votre compte.",
+        },
+      ],
+    },
+  ],
+}
+`;
+
+exports[`M4 golden fixtures > snapshot AST: terms 1`] = `
+{
+  "declarations": [
+    {
+      "name": "count",
+      "type": "input-variable",
+    },
+    {
+      "name": "countPlural",
+      "type": "local-variable",
+      "value": {
+        "annotation": {
+          "name": "plural",
+          "options": [],
+          "type": "function-reference",
+        },
+        "arg": {
+          "name": "count",
+          "type": "variable-reference",
+        },
+        "type": "expression",
+      },
+    },
+  ],
+  "selectors": [
+    {
+      "name": "countPlural",
+      "type": "variable-reference",
+    },
+  ],
+  "variants": [
+    {
+      "matches": [
+        {
+          "key": "countPlural",
+          "type": "literal-match",
+          "value": "one",
+        },
+      ],
+      "pattern": [
+        {
+          "type": "text",
+          "value": "En créant votre CV, vous acceptez nos ",
+        },
+        {
+          "name": "termsLink",
+          "type": "markup-start",
+        },
+        {
+          "type": "text",
+          "value": "conditions générales",
+        },
+        {
+          "name": "termsLink",
+          "type": "markup-end",
+        },
+        {
+          "type": "text",
+          "value": ". Vous avez ",
+        },
+        {
+          "name": "strong",
+          "type": "markup-start",
+        },
+        {
+          "annotation": {
+            "name": "icu:pound",
+            "options": [],
+            "type": "function-reference",
+          },
+          "arg": {
+            "name": "count",
+            "type": "variable-reference",
+          },
+          "type": "expression",
+        },
+        {
+          "type": "text",
+          "value": " document",
+        },
+        {
+          "name": "strong",
+          "type": "markup-end",
+        },
+        {
+          "type": "text",
+          "value": ".",
+        },
+      ],
+    },
+    {
+      "matches": [
+        {
+          "key": "countPlural",
+          "type": "catchall-match",
+        },
+      ],
+      "pattern": [
+        {
+          "type": "text",
+          "value": "En créant vos CV, vous acceptez nos ",
+        },
+        {
+          "name": "termsLink",
+          "type": "markup-start",
+        },
+        {
+          "type": "text",
+          "value": "conditions générales",
+        },
+        {
+          "name": "termsLink",
+          "type": "markup-end",
+        },
+        {
+          "type": "text",
+          "value": ". Vous avez ",
+        },
+        {
+          "name": "strong",
+          "type": "markup-start",
+        },
+        {
+          "annotation": {
+            "name": "icu:pound",
+            "options": [],
+            "type": "function-reference",
+          },
+          "arg": {
+            "name": "count",
+            "type": "variable-reference",
+          },
+          "type": "expression",
+        },
+        {
+          "type": "text",
+          "value": " documents",
+        },
+        {
+          "name": "strong",
+          "type": "markup-end",
+        },
+        {
+          "type": "text",
+          "value": ".",
+        },
+      ],
+    },
+  ],
+}
+`;

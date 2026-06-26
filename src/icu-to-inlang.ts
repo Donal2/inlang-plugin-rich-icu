@@ -119,19 +119,20 @@ function registerSelector(el: any, ctx: Ctx): { matchesFor: (c: string) => any[]
       annotation: { type: "function-reference", name: "plural", options },
     },
   });
-  addSelectorName(ctx, pluralName);
 
+  // exactName = `${pluralName}Exact` (matches icu1 naming, e.g. countPluralExact)
   const hasExact = Object.keys(el.options).some(isExact);
-  let exactName: string | undefined;
-  if (hasExact) {
-    exactName = `${arg}Exact`;
+  const exactName = hasExact ? `${pluralName}Exact` : undefined;
+  if (exactName) {
     addDecl(ctx, {
       type: "local-variable",
       name: exactName,
       value: { type: "expression", arg: { type: "variable-reference", name: arg } },
     });
+    // icu1 puts exact selector FIRST, then plural
     addSelectorName(ctx, exactName);
   }
+  addSelectorName(ctx, pluralName);
 
   return {
     matchesFor: (c) => {

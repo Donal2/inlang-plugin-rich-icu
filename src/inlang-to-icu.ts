@@ -32,31 +32,63 @@ function resolveIcuSelectors(
   const names = message.selectors.map((s) => s.name);
   const consumed = new Set<string>();
   const out: IcuSelector[] = [];
+
+  // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
+  function resolvePlural(pluralDecl: any, pluralKey: string, exactKey: string | undefined): void {
+    const arg: string = pluralDecl.value.arg.name;
+    const ordinal = pluralDecl.value.annotation.options?.some(
+      // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
+      (o: any) => o.name === "type" && o.value.value === "ordinal",
+    );
+    const offset: number = Number(
+      // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
+      pluralDecl.value.annotation.options?.find((o: any) => o.name === "offset")?.value.value ?? 0,
+    );
+    out.push({ arg, kind: ordinal ? "selectordinal" : "plural", offset, pluralKey, exactKey });
+  }
+
   for (const name of names) {
     if (consumed.has(name)) continue;
     // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
     const decl: any = decls.get(name);
     const isPlural = decl?.type === "local-variable" && decl.value?.annotation?.name === "plural";
+    // exact companion: local-variable with same-arg expression, no annotation
+    const isExactCompanion =
+      decl?.type === "local-variable" && decl.value && !decl.value.annotation;
+
     if (isPlural) {
+      // Look for exact companion (any remaining selector that is a no-annotation local-variable
+      // with the same arg). Works for both old ordering (plural-first) and new (exact-first).
       const arg: string = decl.value.arg.name;
-      const ordinal = decl.value.annotation.options?.some(
+      const exactKey = names.find((n) => {
+        if (consumed.has(n) || n === name) return false;
         // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
-        (o: any) => o.name === "type" && o.value.value === "ordinal",
-      );
-      const offset: number = Number(
-        // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
-        decl.value.annotation.options?.find((o: any) => o.name === "offset")?.value.value ?? 0,
-      );
-      const exactName = `${arg}Exact`;
-      const hasExact = names.includes(exactName);
-      if (hasExact) consumed.add(exactName);
-      out.push({
-        arg,
-        kind: ordinal ? "selectordinal" : "plural",
-        offset,
-        pluralKey: name,
-        exactKey: hasExact ? exactName : undefined,
+        const d: any = decls.get(n);
+        return d?.type === "local-variable" && d.value?.arg?.name === arg && !d.value?.annotation;
       });
+      if (exactKey) consumed.add(exactKey);
+      resolvePlural(decl, name, exactKey);
+    } else if (isExactCompanion) {
+      // Exact comes before plural in selectors (icu1 ordering). Find plural companion.
+      const arg: string = decl.value.arg.name;
+      const pluralKey = names.find((n) => {
+        if (consumed.has(n) || n === name) return false;
+        // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
+        const d: any = decls.get(n);
+        return (
+          d?.type === "local-variable" &&
+          d.value?.annotation?.name === "plural" &&
+          d.value?.arg?.name === arg
+        );
+      });
+      if (pluralKey) {
+        consumed.add(pluralKey);
+        // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
+        resolvePlural(decls.get(pluralKey) as any, pluralKey, name);
+      } else {
+        // Standalone (no plural companion) — treat as select
+        out.push({ arg: name, kind: "select", offset: 0, selectKey: name });
+      }
     } else {
       out.push({ arg: name, kind: "select", offset: 0, selectKey: name });
     }

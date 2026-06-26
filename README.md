@@ -43,7 +43,8 @@ Catalogs are JSON maps of `key → ICU string`, one file per locale:
 ## Tested with
 
 - `@inlang/sdk` 2.10.2
-- (pinner la matrice paraglide-js validée ici)
+- `@formatjs/icu-messageformat-parser` ^2
+- Parité d'AST vérifiée contre `@inlang/plugin-icu1` 1.1.0 (corpus sans markup)
 
 ## Development
 
