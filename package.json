@@ -27,14 +27,17 @@
     "@formatjs/icu-messageformat-parser": "^2"
   },
   "devDependencies": {
-    "@inlang/sdk": "2.10.2",
-    "@inlang/plugin-icu1": "^1",
     "@biomejs/biome": "^1",
+    "@inlang/plugin-icu1": "^1",
+    "@inlang/sdk": "2.10.2",
+    "@sinclair/typebox": "^0.31.28",
     "tsup": "^8",
     "typescript": "^5",
     "vitest": "^2"
   },
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "repository": "github:Donal2/inlang-plugin-rich-icu",
   "license": "MIT",
   "author": "Donald <donald@geneinfo.pro>",

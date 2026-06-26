@@ -21,6 +21,9 @@ importers:
       '@inlang/sdk':
         specifier: 2.10.2
         version: 2.10.2
+      '@sinclair/typebox':
+        specifier: ^0.31.28
+        version: 0.31.28
       tsup:
         specifier: ^8
         version: 8.5.1(postcss@8.5.15)(typescript@5.9.3)
