@@ -14,14 +14,14 @@ function roundtrip(source: string) {
 
 describe("M3 round-trip (import→export→import idempotent)", () => {
   for (const src of [
-    "Bonjour {name}.",
-    "{count, plural, one {# pomme} other {# pommes}}",
-    "{count, plural, =0 {rien} one {#} other {#}}",
+    "Hello {name}.",
+    "{count, plural, one {# apple} other {# apples}}",
+    "{count, plural, =0 {none} one {#} other {#}}",
     "{count, plural, offset:1 other {#}}",
-    "{n, selectordinal, one {#er} other {#e}}",
-    "{g, select, male {il} female {elle} other {iel}}",
-    "Il vous reste <strong># crédit</strong>.",
-    "{count, plural, one {<strong># CV</strong>} other {<strong># CV</strong>}}",
+    "{n, selectordinal, one {#st} other {#th}}",
+    "{g, select, male {he} female {she} other {they}}",
+    "You have <strong># credit</strong> left.",
+    "{count, plural, one {<strong># CV</strong>} other {<strong># CVs</strong>}}",
   ]) {
     it(`idempotent: ${src}`, () => {
       const { a, b } = roundtrip(src);

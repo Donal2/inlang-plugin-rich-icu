@@ -1,19 +1,19 @@
 // The 3 examples from SPEC §1 + select + selectordinal + =0 + offset.
 export const RICH: Record<string, string> = {
   resumeCount:
-    "{count, plural, one {Vous avez <strong># CV</strong> dans votre compte.} other {Vous avez <strong># CV</strong> dans votre compte.}}",
+    "{count, plural, one {You have <strong># CV</strong> in your account.} other {You have <strong># CVs</strong> in your account.}}",
   credit:
-    "{count, plural, =0 {Vous n'avez plus de <strong>crédit</strong>. <link>Rechargez votre compte</link>.} one {Il vous reste <strong># crédit</strong>.} other {Il vous reste <strong># crédits</strong>.}}",
+    "{count, plural, =0 {You have no <strong>credit</strong> left. <link>Top up your account</link>.} one {You have <strong># credit</strong> left.} other {You have <strong># credits</strong> left.}}",
   terms:
-    "{count, plural, one {En créant votre CV, vous acceptez nos <termsLink>conditions générales</termsLink>. Vous avez <strong># document</strong>.} other {En créant vos CV, vous acceptez nos <termsLink>conditions générales</termsLink>. Vous avez <strong># documents</strong>.}}",
+    "{count, plural, one {By creating your CV, you accept our <termsLink>terms and conditions</termsLink>. You have <strong># document</strong>.} other {By creating your CVs, you accept our <termsLink>terms and conditions</termsLink>. You have <strong># documents</strong>.}}",
 };
 
 // Corpus WITHOUT markup, for parity with @inlang/plugin-icu1.
 export const PLAIN: Record<string, string> = {
-  simple: "Bonjour {name}.",
-  plural: "{count, plural, one {# pomme} other {# pommes}}",
-  exact: "{count, plural, =0 {rien} one {#} other {#}}",
+  simple: "Hello {name}.",
+  plural: "{count, plural, one {# apple} other {# apples}}",
+  exact: "{count, plural, =0 {none} one {#} other {#}}",
   offset: "{count, plural, offset:1 other {#}}",
-  ordinal: "{n, selectordinal, one {#er} two {#e} other {#e}}",
-  select: "{g, select, male {il} female {elle} other {iel}}",
+  ordinal: "{n, selectordinal, one {#st} two {#nd} other {#th}}",
+  select: "{g, select, male {he} female {she} other {they}}",
 };

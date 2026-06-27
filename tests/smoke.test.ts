@@ -8,7 +8,7 @@ describe("M0 smoke", () => {
   });
 
   it("parses a flat message with one argument", () => {
-    const ast = parseIcu("Bonjour {name}.");
+    const ast = parseIcu("Hello {name}.");
     expect(ast).toHaveLength(3); // literal, argument, literal
   });
 
@@ -16,7 +16,7 @@ describe("M0 smoke", () => {
     const files = [
       {
         locale: "fr",
-        content: new TextEncoder().encode(JSON.stringify({ hi: "Bonjour {name}." })),
+        content: new TextEncoder().encode(JSON.stringify({ hi: "Hello {name}." })),
       },
     ];
     const settings = {
@@ -30,7 +30,7 @@ describe("M0 smoke", () => {
     const imported = await importFiles({ files, settings });
     const exported = await exportFiles({ ...imported, settings } as never);
     const out = JSON.parse(new TextDecoder().decode(exported[0].content));
-    expect(out.hi).toBe("Bonjour {name}.");
+    expect(out.hi).toBe("Hello {name}.");
   });
 
   it("round-trip of TWO messages (correct variant association)", async () => {
@@ -38,7 +38,7 @@ describe("M0 smoke", () => {
       {
         locale: "fr",
         content: new TextEncoder().encode(
-          JSON.stringify({ hi: "Bonjour {name}.", bye: "Au revoir {name}." }),
+          JSON.stringify({ hi: "Hello {name}.", bye: "Goodbye {name}." }),
         ),
       },
     ];
@@ -53,7 +53,7 @@ describe("M0 smoke", () => {
     const imported = await importFiles({ files, settings });
     const exported = await exportFiles({ ...imported, settings } as never);
     const out = JSON.parse(new TextDecoder().decode(exported[0].content));
-    expect(out.hi).toBe("Bonjour {name}.");
-    expect(out.bye).toBe("Au revoir {name}.");
+    expect(out.hi).toBe("Hello {name}.");
+    expect(out.bye).toBe("Goodbye {name}.");
   });
 });

@@ -69,8 +69,8 @@ describe("post-review fixes", () => {
   });
 
   it("#5 plural/select without `other` → throw", () => {
-    expect(() => imp("{g, select, male {il}}")).toThrow();
-    expect(() => imp("{count, plural, one {une pomme}}")).toThrow();
+    expect(() => imp("{g, select, male {he}}")).toThrow();
+    expect(() => imp("{count, plural, one {an apple}}")).toThrow();
   });
 
   it("#6 literal in apostrophes resembling a tag — not corrupted", () => {
@@ -85,7 +85,7 @@ describe("post-review fixes", () => {
 
   it("#7 sibling selectors — source order preserved (count outer, g inner)", () => {
     const a = imp(
-      "{count, plural, one {# chat} other {# chats}} et {g, select, male {lui} other {eux}}",
+      "{count, plural, one {# cat} other {# cats}} and {g, select, male {him} other {them}}",
     );
     expect(a.selectors.map((s: { name: string }) => s.name)).toEqual(["countPlural", "g"]);
     const str = stringify(a);

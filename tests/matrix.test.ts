@@ -5,7 +5,7 @@ const imp = (source: string) => messageToImport({ source, bundleId: "m", locale:
 
 describe("M1 matrix", () => {
   it("plural cardinal → local-variable plural + 2 variants", () => {
-    const r = imp("{count, plural, one {# pomme} other {# pommes}}");
+    const r = imp("{count, plural, one {# apple} other {# apples}}");
     expect(r.selectors).toEqual([{ type: "variable-reference", name: "countPlural" }]);
     expect(r.declarations).toContainEqual({
       type: "local-variable",
@@ -35,7 +35,7 @@ describe("M1 matrix", () => {
   });
 
   it("selectordinal → type:ordinal option, Ordinal name", () => {
-    const r = imp("{n, selectordinal, one {#er} other {#e}}");
+    const r = imp("{n, selectordinal, one {#st} other {#th}}");
     expect(r.selectors[0].name).toBe("nOrdinal");
     // biome-ignore lint/suspicious/noExplicitAny: test helper — navigates dynamic AST
     const decl = r.declarations.find((d: any) => d.name === "nOrdinal");
@@ -57,7 +57,7 @@ describe("M1 matrix", () => {
   });
 
   it("=0 exact → Exact selector FIRST + combined matches (icu1 parity)", () => {
-    const r = imp("{count, plural, =0 {rien} one {#} other {#}}");
+    const r = imp("{count, plural, =0 {none} one {#} other {#}}");
     // icu1: exact selector first, plural selector second; exact name = `${pluralName}Exact`
     // biome-ignore lint/suspicious/noExplicitAny: test helper — navigates dynamic AST
     expect(r.selectors.map((s: any) => s.name)).toEqual(["countPluralExact", "countPlural"]);
@@ -76,7 +76,7 @@ describe("M1 matrix", () => {
   });
 
   it("select gender", () => {
-    const r = imp("{g, select, male {il} female {elle} other {iel}}");
+    const r = imp("{g, select, male {he} female {she} other {they}}");
     expect(r.selectors).toEqual([{ type: "variable-reference", name: "g" }]);
     expect(r.declarations).toContainEqual({ type: "input-variable", name: "g" });
     expect(r.variants).toHaveLength(3);
