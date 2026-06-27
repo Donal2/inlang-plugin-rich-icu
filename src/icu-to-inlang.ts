@@ -1,18 +1,18 @@
 import { type MessageFormatElement, TYPE } from "@formatjs/icu-messageformat-parser";
 import { markupEnd, markupStandalone, markupStart } from "./markup.js";
-import { parseIcu } from "./parse.js";
+import { SELF_CLOSE_MARK, parseIcu } from "./parse.js";
 
 export interface ImportedMessage {
-  // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
+  // biome-ignore lint/suspicious/noExplicitAny: AST inlang dynamique
   declarations: any[];
-  // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
+  // biome-ignore lint/suspicious/noExplicitAny: AST inlang dynamique
   selectors: any[];
-  // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
+  // biome-ignore lint/suspicious/noExplicitAny: AST inlang dynamique
   variants: Array<{ matches: any[]; pattern: any[] }>;
 }
 
 interface Ctx {
-  // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
+  // biome-ignore lint/suspicious/noExplicitAny: AST inlang dynamique
   declarations: Map<string, any>; // name -> declaration
   selectorNames: string[]; // ordre d'apparition, dédupliqué
 }
@@ -35,7 +35,7 @@ export function messageToImport(args: {
   };
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
+// biome-ignore lint/suspicious/noExplicitAny: AST inlang dynamique
 function addDecl(ctx: Ctx, decl: any) {
   if (!ctx.declarations.has(decl.name)) ctx.declarations.set(decl.name, decl);
 }
@@ -43,39 +43,78 @@ function addSelectorName(ctx: Ctx, name: string) {
   if (!ctx.selectorNames.includes(name)) ctx.selectorNames.push(name);
 }
 
-/** Expansion cartésienne : trouve le 1er sélecteur, branche par case, recurse. */
-function expand(
-  elements: MessageFormatElement[],
+// biome-ignore lint/suspicious/noExplicitAny: variant inlang { matches, pattern }
+type Variant = { matches: any[]; pattern: any[] };
+
+/**
+ * Produit cartésien gauche-à-droite : chaque élément étend l'ensemble courant de
+ * variants. Les sélecteurs (plural/select) et les balises markup peuvent
+ * apparaître à n'importe quelle profondeur — y compris un sélecteur DANS une
+ * balise — et l'ordre source des sélecteurs frères est préservé.
+ */
+function expand(elements: MessageFormatElement[], ctx: Ctx, poundArg: string | null): Variant[] {
+  let variants: Variant[] = [{ matches: [], pattern: [] }];
+  for (const el of elements) {
+    const next: Variant[] = [];
+    for (const v of variants) {
+      for (const ext of extendVariant(v, el, ctx, poundArg)) next.push(ext);
+    }
+    variants = next;
+  }
+  return variants;
+}
+
+function extendVariant(
+  v: Variant,
+  el: MessageFormatElement,
   ctx: Ctx,
   poundArg: string | null,
-  // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
-): Array<{ matches: any[]; pattern: any[] }> {
-  for (let i = 0; i < elements.length; i++) {
-    const el = elements[i];
-    if (el.type === TYPE.plural || el.type === TYPE.select) {
-      const beforeParts = mapSimpleList(elements.slice(0, i), ctx, poundArg);
-      const afterVariants = expand(elements.slice(i + 1), ctx, poundArg);
-      const sel = registerSelector(el, ctx);
-      // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
-      const out: Array<{ matches: any[]; pattern: any[] }> = [];
-      for (const caseKey of orderCases(el)) {
-        const childPound = el.type === TYPE.plural ? el.value : poundArg;
-        // biome-ignore lint/suspicious/noExplicitAny: FormatJS AST cast
-        const caseVariants = expand((el as any).options[caseKey].value, ctx, childPound);
-        const caseMatches = sel.matchesFor(caseKey);
-        for (const cv of caseVariants) {
-          for (const av of afterVariants) {
-            out.push({
-              matches: [...caseMatches, ...cv.matches, ...av.matches],
-              pattern: [...beforeParts, ...cv.pattern, ...av.pattern],
-            });
-          }
-        }
+): Variant[] {
+  if (el.type === TYPE.plural || el.type === TYPE.select) {
+    const sel = registerSelector(el, ctx);
+    const out: Variant[] = [];
+    for (const caseKey of orderCases(el)) {
+      const childPound = el.type === TYPE.plural ? el.value : poundArg;
+      const caseMatches = sel.matchesFor(caseKey);
+      // biome-ignore lint/suspicious/noExplicitAny: FormatJS AST cast
+      for (const cv of expand((el as any).options[caseKey].value, ctx, childPound)) {
+        out.push({
+          matches: [...v.matches, ...caseMatches, ...cv.matches],
+          pattern: [...v.pattern, ...cv.pattern],
+        });
       }
-      return out;
     }
+    return out;
   }
-  return [{ matches: [], pattern: mapSimpleList(elements, ctx, poundArg) }];
+
+  if (el.type === TYPE.tag) {
+    // biome-ignore lint/suspicious/noExplicitAny: FormatJS AST — TagElement carries .value/.children
+    const name = (el as any).value as string;
+    // biome-ignore lint/suspicious/noExplicitAny: FormatJS AST — TagElement carries .value/.children
+    const children = ((el as any).children ?? []) as MessageFormatElement[];
+    if (isSelfClosing(children)) {
+      return [{ matches: v.matches, pattern: [...v.pattern, markupStandalone(name)] }];
+    }
+    const out: Variant[] = [];
+    for (const cv of expand(children, ctx, poundArg)) {
+      out.push({
+        matches: [...v.matches, ...cv.matches],
+        pattern: [...v.pattern, markupStart(name), ...cv.pattern, markupEnd(name)],
+      });
+    }
+    return out;
+  }
+
+  return [{ matches: v.matches, pattern: [...v.pattern, ...mapSimple(el, ctx, poundArg)] }];
+}
+
+function isSelfClosing(children: MessageFormatElement[]): boolean {
+  return (
+    children.length === 1 &&
+    children[0].type === TYPE.literal &&
+    // biome-ignore lint/suspicious/noExplicitAny: FormatJS literal carries .value
+    (children[0] as any).value === SELF_CLOSE_MARK
+  );
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: FormatJS AST — union type requires cast
@@ -105,7 +144,7 @@ function registerSelector(el: any, ctx: Ctx): { matchesFor: (c: string) => any[]
   const offset: number = el.offset ?? 0;
   const word = ordinal ? "Ordinal" : "Plural";
   const pluralName = `${arg}${word}${offset ? `Offset${offset}` : ""}`;
-  // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
+  // biome-ignore lint/suspicious/noExplicitAny: AST inlang dynamique
   const options: any[] = [];
   if (ordinal) options.push({ name: "type", value: { type: "literal", value: "ordinal" } });
   if (offset) options.push({ name: "offset", value: { type: "literal", value: String(offset) } });
@@ -151,15 +190,7 @@ function registerSelector(el: any, ctx: Ctx): { matchesFor: (c: string) => any[]
   };
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
-function mapSimpleList(els: MessageFormatElement[], ctx: Ctx, poundArg: string | null): any[] {
-  // biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
-  const parts: any[] = [];
-  for (const el of els) parts.push(...mapSimple(el, ctx, poundArg));
-  return parts;
-}
-
-// biome-ignore lint/suspicious/noExplicitAny: dynamic AST nodes — typed in §3 api-reference
+// biome-ignore lint/suspicious/noExplicitAny: AST inlang dynamique
 function mapSimple(el: MessageFormatElement, ctx: Ctx, poundArg: string | null): any[] {
   switch (el.type) {
     case TYPE.literal:
@@ -180,14 +211,13 @@ function mapSimple(el: MessageFormatElement, ctx: Ctx, poundArg: string | null):
     case TYPE.number:
     case TYPE.date:
     case TYPE.time: {
-      // biome-ignore lint/suspicious/noExplicitAny: FormatJS AST — number/date/time nodes carry .value/.style
+      // biome-ignore lint/suspicious/noExplicitAny: FormatJS AST — number/date/time carry .value/.style
       const numEl = el as any;
       addDecl(ctx, { type: "input-variable", name: numEl.value });
       const fn = el.type === TYPE.number ? "number" : el.type === TYPE.date ? "date" : "time";
-      const style = numEl.style;
-      const options = style
-        ? [{ name: "style", value: { type: "literal", value: String(style) } }]
-        : [];
+      // après normalizeSkeletons (parse.ts), style est toujours une string ou undefined
+      const style: string | undefined = numEl.style;
+      const options = style ? [{ name: "style", value: { type: "literal", value: style } }] : [];
       return [
         {
           type: "expression",
@@ -196,15 +226,7 @@ function mapSimple(el: MessageFormatElement, ctx: Ctx, poundArg: string | null):
         },
       ];
     }
-    case TYPE.tag: {
-      // biome-ignore lint/suspicious/noExplicitAny: FormatJS AST cast — TagElement carries .value/.children
-      const name = (el as any).value as string;
-      // biome-ignore lint/suspicious/noExplicitAny: FormatJS AST cast — TagElement carries .value/.children
-      const children = ((el as any).children ?? []) as MessageFormatElement[];
-      if (children.length === 0) return [markupStandalone(name)];
-      return [markupStart(name), ...mapSimpleList(children, ctx, poundArg), markupEnd(name)];
-    }
     default:
-      throw new Error(`mapSimple: type non géré ${el.type} (markup ajouté en Task 6)`);
+      throw new Error(`Type ICU non supporté : ${el.type}`);
   }
 }

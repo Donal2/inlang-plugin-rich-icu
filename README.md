@@ -40,6 +40,33 @@ Catalogs are JSON maps of `key → ICU string`, one file per locale:
 />
 ```
 
+## Supported ICU features
+
+- **`select`, `plural`, `selectordinal`** — including exact matches (`=0`, `=1`, …)
+  and `offset:`. Sibling selectors keep their source order.
+- **`#`** (octothorpe) inside `plural` / `selectordinal` cases.
+- **Markup tags** — paired (`<strong>…</strong>`) and self-closing (`<br/>`),
+  including selectors nested inside a tag (`<b>{n, plural, …}</b>`).
+- **Formatter functions** `number`, `date`, `time` — with named styles
+  (`percent`, `short`, …) **and** `::` skeletons (`{p, number, ::currency/USD}`),
+  preserved on round-trip.
+
+## Not supported in v1
+
+These throw a clear error on import (the offending message is skipped, the rest
+of the file still imports):
+
+- The `spellout`, `ordinal` and `duration` **formatter functions**
+  (`{n, spellout}`, `{n, ordinal}`, `{d, duration}`). Note: `selectordinal`
+  *is* supported — only the standalone `ordinal` number formatter is not.
+- Markup **attributes / options** (`<link href="…">`) — tags carry their name only.
+
+Other notes:
+
+- `pathPattern` is a single string (must contain `{locale}` and end in `.json`).
+- A `plural` / `select` / `selectordinal` without an `other` clause is rejected,
+  as required by ICU MessageFormat.
+
 ## Tested with
 
 - `@inlang/sdk` 2.10.2
