@@ -1,19 +1,19 @@
 name: Release
-# Publication npm via OIDC Trusted Publisher (aucun NPM_TOKEN stocké).
-# Pré-requis (à configurer une seule fois sur npmjs.com APRÈS le bootstrap local de v0.1.0) :
-#   1. le paquet `inlang-plugin-rich-icu` existe déjà (publié en local : `npm login` 2FA puis `npm publish --access public`) ;
-#   2. Trusted Publisher activé sur le paquet → repo GitHub + ce workflow ;
-#   3. staged publishing activé sur le paquet.
-# Ce workflow met la version en STAGING (non publique). Un mainteneur doit ensuite
-# l'approuver avec 2FA : `npm stage approve <id>` (ou le bouton sur npmjs.com).
-# Voir https://docs.npmjs.com/staged-publishing#approve-a-staged-package
+# npm publish via OIDC Trusted Publisher (no NPM_TOKEN stored).
+# Prerequisites (configure once on npmjs.com AFTER the local v0.1.0 bootstrap):
+#   1. the package `inlang-plugin-rich-icu` already exists (published locally: `npm login` 2FA then `npm publish --access public`);
+#   2. Trusted Publisher enabled on the package → GitHub repo + this workflow;
+#   3. staged publishing enabled on the package.
+# This workflow puts the version in STAGING (not public). A maintainer must then
+# approve it with 2FA: `npm stage approve <id>` (or the button on npmjs.com).
+# See https://docs.npmjs.com/staged-publishing#approve-a-staged-package
 on:
   push:
     tags:
       - "v*"
 permissions:
   contents: write
-  id-token: write # OIDC : authentification sans token
+  id-token: write # OIDC: authentication without token
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -22,13 +22,13 @@ jobs:
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22 # staged publishing exige Node >= 22.14
+          node-version: 22 # staged publishing requires Node >= 22.14
           cache: pnpm
           registry-url: "https://registry.npmjs.org"
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - run: npm install -g npm@latest # staged publishing exige npm >= 11.15
-      # OIDC + trusted publisher : pas de NODE_AUTH_TOKEN ; provenance automatique.
-      # Met la version en staging — à approuver ensuite avec 2FA.
+      - run: npm install -g npm@latest # staged publishing requires npm >= 11.15
+      # OIDC + trusted publisher: no NODE_AUTH_TOKEN; provenance automatic.
+      # Puts the version in staging — approve afterwards with 2FA.
       - run: npm stage publish
       - uses: softprops/action-gh-release@v2

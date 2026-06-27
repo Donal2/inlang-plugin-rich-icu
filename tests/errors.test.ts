@@ -1,14 +1,14 @@
 import { describe, expect, it } from "vitest";
 import { messageToImport } from "../src/icu-to-inlang.js";
 
-describe("M4 erreurs", () => {
-  it("ICU malformé → throw clair (jamais de tag silencieusement perdu)", () => {
+describe("M4 errors", () => {
+  it("malformed ICU → clear throw (never silently drops a tag)", () => {
     expect(() =>
       messageToImport({ source: "{count, plural, one {", bundleId: "m", locale: "fr" }),
     ).toThrow();
   });
 
-  it("un skeleton number passe sans crash (déféré, jamais corrompu)", () => {
+  it("number skeleton passes without crash (deferred, never corrupted)", () => {
     const r = messageToImport({ source: "{v, number, percent}", bundleId: "m", locale: "fr" });
     const expr = r.variants[0].pattern[0];
     expect(expr.annotation.name).toBe("number");

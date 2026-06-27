@@ -71,7 +71,7 @@ Other notes:
 
 - `@inlang/sdk` 2.10.2
 - `@formatjs/icu-messageformat-parser` ^2
-- Parité d'AST vérifiée contre `@inlang/plugin-icu1` 1.1.0 (corpus sans markup)
+- AST parity verified against `@inlang/plugin-icu1` 1.1.0 (markup-free corpus)
 
 ## Development
 

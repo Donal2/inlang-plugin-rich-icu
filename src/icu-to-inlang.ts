@@ -1,20 +1,21 @@
 import { type MessageFormatElement, TYPE } from "@formatjs/icu-messageformat-parser";
 import { markupEnd, markupStandalone, markupStart } from "./markup.js";
+import { orderCaseKeys } from "./order-cases.js";
 import { SELF_CLOSE_MARK, parseIcu } from "./parse.js";
 
 export interface ImportedMessage {
-  // biome-ignore lint/suspicious/noExplicitAny: AST inlang dynamique
+  // biome-ignore lint/suspicious/noExplicitAny: dynamic inlang AST
   declarations: any[];
-  // biome-ignore lint/suspicious/noExplicitAny: AST inlang dynamique
+  // biome-ignore lint/suspicious/noExplicitAny: dynamic inlang AST
   selectors: any[];
-  // biome-ignore lint/suspicious/noExplicitAny: AST inlang dynamique
+  // biome-ignore lint/suspicious/noExplicitAny: dynamic inlang AST
   variants: Array<{ matches: any[]; pattern: any[] }>;
 }
 
 interface Ctx {
-  // biome-ignore lint/suspicious/noExplicitAny: AST inlang dynamique
+  // biome-ignore lint/suspicious/noExplicitAny: dynamic inlang AST
   declarations: Map<string, any>; // name -> declaration
-  selectorNames: string[]; // ordre d'apparition, dédupliqué
+  selectorNames: string[]; // order of appearance, deduplicated
 }
 
 const EXACT_RE = /^=-?(?:0|[1-9]\d*)(?:\.\d+)?$/;
@@ -35,7 +36,7 @@ export function messageToImport(args: {
   };
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: AST inlang dynamique
+// biome-ignore lint/suspicious/noExplicitAny: dynamic inlang AST
 function addDecl(ctx: Ctx, decl: any) {
   if (!ctx.declarations.has(decl.name)) ctx.declarations.set(decl.name, decl);
 }
@@ -43,14 +44,14 @@ function addSelectorName(ctx: Ctx, name: string) {
   if (!ctx.selectorNames.includes(name)) ctx.selectorNames.push(name);
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: variant inlang { matches, pattern }
+// biome-ignore lint/suspicious/noExplicitAny: inlang variant { matches, pattern }
 type Variant = { matches: any[]; pattern: any[] };
 
 /**
- * Produit cartésien gauche-à-droite : chaque élément étend l'ensemble courant de
- * variants. Les sélecteurs (plural/select) et les balises markup peuvent
- * apparaître à n'importe quelle profondeur — y compris un sélecteur DANS une
- * balise — et l'ordre source des sélecteurs frères est préservé.
+ * Left-to-right cartesian product: each element extends the current set of
+ * variants. Selectors (plural/select) and markup tags may appear at any depth —
+ * including a selector INSIDE a tag — and the source order of sibling selectors
+ * is preserved.
  */
 function expand(elements: MessageFormatElement[], ctx: Ctx, poundArg: string | null): Variant[] {
   let variants: Variant[] = [{ matches: [], pattern: [] }];
@@ -73,7 +74,8 @@ function extendVariant(
   if (el.type === TYPE.plural || el.type === TYPE.select) {
     const sel = registerSelector(el, ctx);
     const out: Variant[] = [];
-    for (const caseKey of orderCases(el)) {
+    // biome-ignore lint/suspicious/noExplicitAny: FormatJS AST cast
+    for (const caseKey of orderCaseKeys(Object.keys((el as any).options), isExact)) {
       const childPound = el.type === TYPE.plural ? el.value : poundArg;
       const caseMatches = sel.matchesFor(caseKey);
       // biome-ignore lint/suspicious/noExplicitAny: FormatJS AST cast
@@ -118,15 +120,6 @@ function isSelfClosing(children: MessageFormatElement[]): boolean {
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: FormatJS AST — union type requires cast
-function orderCases(el: any): string[] {
-  const keys = Object.keys(el.options);
-  const exacts = keys.filter(isExact);
-  const cldr = keys.filter((k) => !isExact(k) && k !== "other");
-  const other = keys.includes("other") ? ["other"] : [];
-  return [...exacts, ...cldr, ...other];
-}
-
-// biome-ignore lint/suspicious/noExplicitAny: FormatJS AST — union type requires cast
 function registerSelector(el: any, ctx: Ctx): { matchesFor: (c: string) => any[] } {
   const arg: string = el.value;
   if (el.type === TYPE.select) {
@@ -144,7 +137,7 @@ function registerSelector(el: any, ctx: Ctx): { matchesFor: (c: string) => any[]
   const offset: number = el.offset ?? 0;
   const word = ordinal ? "Ordinal" : "Plural";
   const pluralName = `${arg}${word}${offset ? `Offset${offset}` : ""}`;
-  // biome-ignore lint/suspicious/noExplicitAny: AST inlang dynamique
+  // biome-ignore lint/suspicious/noExplicitAny: dynamic inlang AST
   const options: any[] = [];
   if (ordinal) options.push({ name: "type", value: { type: "literal", value: "ordinal" } });
   if (offset) options.push({ name: "offset", value: { type: "literal", value: String(offset) } });
@@ -168,7 +161,7 @@ function registerSelector(el: any, ctx: Ctx): { matchesFor: (c: string) => any[]
       name: exactName,
       value: { type: "expression", arg: { type: "variable-reference", name: arg } },
     });
-    // icu1 puts exact selector FIRST, then plural
+    // icu1 puts the exact selector FIRST, then the plural
     addSelectorName(ctx, exactName);
   }
   addSelectorName(ctx, pluralName);
@@ -190,7 +183,7 @@ function registerSelector(el: any, ctx: Ctx): { matchesFor: (c: string) => any[]
   };
 }
 
-// biome-ignore lint/suspicious/noExplicitAny: AST inlang dynamique
+// biome-ignore lint/suspicious/noExplicitAny: dynamic inlang AST
 function mapSimple(el: MessageFormatElement, ctx: Ctx, poundArg: string | null): any[] {
   switch (el.type) {
     case TYPE.literal:
@@ -215,7 +208,7 @@ function mapSimple(el: MessageFormatElement, ctx: Ctx, poundArg: string | null):
       const numEl = el as any;
       addDecl(ctx, { type: "input-variable", name: numEl.value });
       const fn = el.type === TYPE.number ? "number" : el.type === TYPE.date ? "date" : "time";
-      // après normalizeSkeletons (parse.ts), style est toujours une string ou undefined
+      // after normalizeSkeletons (parse.ts), style is always a string or undefined
       const style: string | undefined = numEl.style;
       const options = style ? [{ name: "style", value: { type: "literal", value: style } }] : [];
       return [
@@ -227,6 +220,6 @@ function mapSimple(el: MessageFormatElement, ctx: Ctx, poundArg: string | null):
       ];
     }
     default:
-      throw new Error(`Type ICU non supporté : ${el.type}`);
+      throw new Error(`Unsupported ICU element type: ${el.type}`);
   }
 }

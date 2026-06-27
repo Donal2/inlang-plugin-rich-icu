@@ -3,16 +3,16 @@ import { parseIcu } from "../src/parse.js";
 import { richIcuPlugin } from "../src/plugin.js";
 
 describe("M0 smoke", () => {
-  it("plugin a la bonne clé", () => {
+  it("plugin has the correct key", () => {
     expect(richIcuPlugin.key).toBe("plugin.donal2.richIcu");
   });
 
-  it("parse un message plat avec un argument", () => {
+  it("parses a flat message with one argument", () => {
     const ast = parseIcu("Bonjour {name}.");
     expect(ast).toHaveLength(3); // literal, argument, literal
   });
 
-  it("round-trip d'un message plat (texte + arg)", async () => {
+  it("round-trip of a flat message (text + arg)", async () => {
     const files = [
       {
         locale: "fr",
@@ -33,7 +33,7 @@ describe("M0 smoke", () => {
     expect(out.hi).toBe("Bonjour {name}.");
   });
 
-  it("round-trip de DEUX messages (association variants correcte)", async () => {
+  it("round-trip of TWO messages (correct variant association)", async () => {
     const files = [
       {
         locale: "fr",

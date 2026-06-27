@@ -6,7 +6,7 @@ const imp = (source: string) =>
   messageToImport({ source, bundleId: "m", locale: "fr" }).variants[0].pattern;
 
 describe("M2 import markup", () => {
-  it("balise paire → markup-start + texte + markup-end", () => {
+  it("paired tag → markup-start + text + markup-end", () => {
     expect(imp("a <b>x</b> c")).toEqual([
       { type: "text", value: "a " },
       { type: "markup-start", name: "b" },
@@ -16,7 +16,7 @@ describe("M2 import markup", () => {
     ]);
   });
 
-  it("balise auto-fermante → markup-standalone", () => {
+  it("self-closing tag → markup-standalone", () => {
     expect(imp("a<br/>b")).toEqual([
       { type: "text", value: "a" },
       { type: "markup-standalone", name: "br" },
@@ -24,7 +24,7 @@ describe("M2 import markup", () => {
     ]);
   });
 
-  it("balises imbriquées", () => {
+  it("nested tags", () => {
     expect(imp("<a><b>x</b></a>")).toEqual([
       { type: "markup-start", name: "a" },
       { type: "markup-start", name: "b" },
@@ -34,7 +34,7 @@ describe("M2 import markup", () => {
     ]);
   });
 
-  it("balise enroulant # dans un plural", () => {
+  it("tag wrapping # in a plural", () => {
     const pat = messageToImport({
       source: "{c, plural, other {<b>#</b>}}",
       bundleId: "m",
@@ -51,7 +51,7 @@ describe("M2 import markup", () => {
     ]);
   });
 
-  it("constructeurs et sérialisation", () => {
+  it("constructors and serialization", () => {
     expect(markupStart("strong")).toEqual({ type: "markup-start", name: "strong" });
     expect(markupStandalone("br")).toEqual({ type: "markup-standalone", name: "br" });
     expect(markupPartToTag({ type: "markup-end", name: "b" })).toBe("</b>");

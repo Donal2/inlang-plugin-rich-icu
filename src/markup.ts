@@ -8,7 +8,7 @@ export const markupStart = (name: string): MarkupPart => ({ type: "markup-start"
 export const markupEnd = (name: string): MarkupPart => ({ type: "markup-end", name });
 export const markupStandalone = (name: string): MarkupPart => ({ type: "markup-standalone", name });
 
-/** Sérialise une part markup vers sa balise ICU. */
+/** Serialize a markup part back to its ICU tag. */
 export function markupPartToTag(part: MarkupPart): string {
   switch (part.type) {
     case "markup-start":

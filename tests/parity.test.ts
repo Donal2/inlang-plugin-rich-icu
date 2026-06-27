@@ -1,4 +1,4 @@
-// @ts-expect-error — plugin-icu1 n'expose pas forcément de types
+// @ts-expect-error — plugin-icu1 does not necessarily expose types
 import icu1 from "@inlang/plugin-icu1";
 import { describe, expect, it } from "vitest";
 import { richIcuPlugin } from "../src/plugin.js";
@@ -7,7 +7,7 @@ import { PLAIN } from "./fixtures/messages.js";
 // biome-ignore lint/suspicious/noExplicitAny: test helper — settings shape varies across SDK versions
 const settings: any = { baseLocale: "fr", locales: ["fr"] };
 
-/** Normalise pour comparer en ignorant les ids générés. */
+/** Normalize for comparison, ignoring generated ids. */
 // biome-ignore lint/suspicious/noExplicitAny: test helper — normalizes dynamic AST returned by both plugins
 function normalize(r: any) {
   return {
@@ -24,9 +24,9 @@ function normalize(r: any) {
   };
 }
 
-describe("M4 parité avec @inlang/plugin-icu1 (corpus sans markup)", () => {
+describe("M4 parity with @inlang/plugin-icu1 (markup-free corpus)", () => {
   for (const [key, source] of Object.entries(PLAIN)) {
-    it(`même AST: ${key}`, () => {
+    it(`same AST: ${key}`, () => {
       const files = [
         { locale: "fr", content: new TextEncoder().encode(JSON.stringify({ [key]: source })) },
       ];

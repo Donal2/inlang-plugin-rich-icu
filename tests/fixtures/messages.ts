@@ -1,4 +1,4 @@
-// Les 3 exemples du SPEC §1 + select + selectordinal + =0 + offset.
+// The 3 examples from SPEC §1 + select + selectordinal + =0 + offset.
 export const RICH: Record<string, string> = {
   resumeCount:
     "{count, plural, one {Vous avez <strong># CV</strong> dans votre compte.} other {Vous avez <strong># CV</strong> dans votre compte.}}",
@@ -8,7 +8,7 @@ export const RICH: Record<string, string> = {
     "{count, plural, one {En créant votre CV, vous acceptez nos <termsLink>conditions générales</termsLink>. Vous avez <strong># document</strong>.} other {En créant vos CV, vous acceptez nos <termsLink>conditions générales</termsLink>. Vous avez <strong># documents</strong>.}}",
 };
 
-// Corpus SANS markup, pour la parité avec @inlang/plugin-icu1.
+// Corpus WITHOUT markup, for parity with @inlang/plugin-icu1.
 export const PLAIN: Record<string, string> = {
   simple: "Bonjour {name}.",
   plural: "{count, plural, one {# pomme} other {# pommes}}",

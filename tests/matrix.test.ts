@@ -3,7 +3,7 @@ import { messageToImport } from "../src/icu-to-inlang.js";
 
 const imp = (source: string) => messageToImport({ source, bundleId: "m", locale: "fr" });
 
-describe("M1 matrice", () => {
+describe("M1 matrix", () => {
   it("plural cardinal → local-variable plural + 2 variants", () => {
     const r = imp("{count, plural, one {# pomme} other {# pommes}}");
     expect(r.selectors).toEqual([{ type: "variable-reference", name: "countPlural" }]);
@@ -23,7 +23,7 @@ describe("M1 matrice", () => {
     expect(r.variants[1].matches).toEqual([{ type: "catchall-match", key: "countPlural" }]);
   });
 
-  it("# dans un plural → expression icu:pound sur l'arg", () => {
+  it("# in a plural → icu:pound expression on the arg", () => {
     const r = imp("{count, plural, other {#}}");
     expect(r.variants[0].pattern).toEqual([
       {
@@ -34,7 +34,7 @@ describe("M1 matrice", () => {
     ]);
   });
 
-  it("selectordinal → option type:ordinal, nom Ordinal", () => {
+  it("selectordinal → type:ordinal option, Ordinal name", () => {
     const r = imp("{n, selectordinal, one {#er} other {#e}}");
     expect(r.selectors[0].name).toBe("nOrdinal");
     // biome-ignore lint/suspicious/noExplicitAny: test helper — navigates dynamic AST
@@ -56,7 +56,7 @@ describe("M1 matrice", () => {
     });
   });
 
-  it("=0 exact → sélecteur Exact EN PREMIER + matches combinés (parité icu1)", () => {
+  it("=0 exact → Exact selector FIRST + combined matches (icu1 parity)", () => {
     const r = imp("{count, plural, =0 {rien} one {#} other {#}}");
     // icu1: exact selector first, plural selector second; exact name = `${pluralName}Exact`
     // biome-ignore lint/suspicious/noExplicitAny: test helper — navigates dynamic AST

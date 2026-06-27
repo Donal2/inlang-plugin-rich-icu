@@ -1,26 +1,26 @@
 import { type MessageFormatElement, TYPE, parse } from "@formatjs/icu-messageformat-parser";
 
-/** Marqueur interne injecté comme unique enfant d'une balise <tag/> auto-fermante,
- *  pour la distinguer d'une paire vide <tag></tag> après parsing FormatJS. */
-export const SELF_CLOSE_MARK = "";
+/** Internal marker injected as the sole child of a self-closing `<tag/>`, so it can
+ *  be told apart from an empty paired `<tag></tag>` after FormatJS parsing. */
+export const SELF_CLOSE_MARK = String.fromCodePoint(0xe000);
 
 const SELF_CLOSE_RE = /<([\w][\w-]*)\s*\/>/y;
 
-/** Réécrit <tag/> en <tag>{marqueur}</tag>, en respectant les littéraux ICU
- *  entre apostrophes (qui ne doivent jamais être réécrits). */
+/** Rewrite `<tag/>` to `<tag>{marker}</tag>`, while respecting ICU apostrophe-quoted
+ *  literals (which must never be rewritten). */
 function normalizeSelfClosingTags(source: string): string {
   let out = "";
   let i = 0;
   while (i < source.length) {
     const ch = source[i];
     if (ch === "'") {
-      // '' = apostrophe littérale échappée
+      // '' = escaped literal apostrophe
       if (source[i + 1] === "'") {
         out += "''";
         i += 2;
         continue;
       }
-      // ' devant un caractère spécial ICU ouvre un littéral quoté jusqu'à la prochaine '
+      // an apostrophe before an ICU special char opens a quoted literal until the next '
       const next = source[i + 1];
       if (next === "{" || next === "}" || next === "<" || next === "#") {
         const end = source.indexOf("'", i + 1);
@@ -51,9 +51,9 @@ function normalizeSelfClosingTags(source: string): string {
   return out;
 }
 
-/** Remplace les styles skeleton (objets FormatJS pour `::...`) par leur texte
- *  brut, extrait via la location, pour préserver le skeleton au round-trip. */
-// biome-ignore lint/suspicious/noExplicitAny: AST ICU FormatJS dynamique
+/** Replace skeleton styles (FormatJS objects for `::...`) with their raw text,
+ *  extracted via the location, so the skeleton survives the round-trip. */
+// biome-ignore lint/suspicious/noExplicitAny: dynamic FormatJS ICU AST
 function normalizeSkeletons(elements: any[], src: string): void {
   for (const el of elements) {
     if (
@@ -71,7 +71,7 @@ function normalizeSkeletons(elements: any[], src: string): void {
   }
 }
 
-/** Parse une chaîne ICU MessageFormat 1 en AST FormatJS, balises markup activées. */
+/** Parse an ICU MessageFormat 1 string into a FormatJS AST, with markup tags enabled. */
 export function parseIcu(source: string): MessageFormatElement[] {
   const normalized = normalizeSelfClosingTags(source);
   const ast = parse(normalized, {
