@@ -194,7 +194,7 @@ exports[`M4 golden fixtures > snapshot AST: credit 1`] = `
 }
 `;
 
-exports[`M4 golden fixtures > snapshot AST: resumeCount 1`] = `
+exports[`M4 golden fixtures > snapshot AST: messageCount 1`] = `
 {
   "declarations": [
     {
@@ -256,7 +256,7 @@ exports[`M4 golden fixtures > snapshot AST: resumeCount 1`] = `
         },
         {
           "type": "text",
-          "value": " CV",
+          "value": " new message",
         },
         {
           "name": "strong",
@@ -264,7 +264,7 @@ exports[`M4 golden fixtures > snapshot AST: resumeCount 1`] = `
         },
         {
           "type": "text",
-          "value": " in your account.",
+          "value": " in your inbox.",
         },
       ],
     },
@@ -298,7 +298,7 @@ exports[`M4 golden fixtures > snapshot AST: resumeCount 1`] = `
         },
         {
           "type": "text",
-          "value": " CVs",
+          "value": " new messages",
         },
         {
           "name": "strong",
@@ -306,7 +306,7 @@ exports[`M4 golden fixtures > snapshot AST: resumeCount 1`] = `
         },
         {
           "type": "text",
-          "value": " in your account.",
+          "value": " in your inbox.",
         },
       ],
     },
@@ -356,7 +356,7 @@ exports[`M4 golden fixtures > snapshot AST: terms 1`] = `
       "pattern": [
         {
           "type": "text",
-          "value": "By creating your CV, you accept our ",
+          "value": "By publishing your post, you accept our ",
         },
         {
           "name": "termsLink",
@@ -392,7 +392,7 @@ exports[`M4 golden fixtures > snapshot AST: terms 1`] = `
         },
         {
           "type": "text",
-          "value": " document",
+          "value": " comment",
         },
         {
           "name": "strong",
@@ -414,7 +414,7 @@ exports[`M4 golden fixtures > snapshot AST: terms 1`] = `
       "pattern": [
         {
           "type": "text",
-          "value": "By creating your CVs, you accept our ",
+          "value": "By publishing your posts, you accept our ",
         },
         {
           "name": "termsLink",
@@ -450,7 +450,7 @@ exports[`M4 golden fixtures > snapshot AST: terms 1`] = `
         },
         {
           "type": "text",
-          "value": " documents",
+          "value": " comments",
         },
         {
           "name": "strong",

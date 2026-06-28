@@ -21,7 +21,7 @@ describe("M3 round-trip (import→export→import idempotent)", () => {
     "{n, selectordinal, one {#st} other {#th}}",
     "{g, select, male {he} female {she} other {they}}",
     "You have <strong># credit</strong> left.",
-    "{count, plural, one {<strong># CV</strong>} other {<strong># CVs</strong>}}",
+    "{count, plural, one {<strong># message</strong>} other {<strong># messages</strong>}}",
   ]) {
     it(`idempotent: ${src}`, () => {
       const { a, b } = roundtrip(src);

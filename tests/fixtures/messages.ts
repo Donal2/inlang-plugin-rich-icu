@@ -1,11 +1,11 @@
 // The 3 examples from SPEC §1 + select + selectordinal + =0 + offset.
 export const RICH: Record<string, string> = {
-  resumeCount:
-    "{count, plural, one {You have <strong># CV</strong> in your account.} other {You have <strong># CVs</strong> in your account.}}",
+  messageCount:
+    "{count, plural, one {You have <strong># new message</strong> in your inbox.} other {You have <strong># new messages</strong> in your inbox.}}",
   credit:
     "{count, plural, =0 {You have no <strong>credit</strong> left. <link>Top up your account</link>.} one {You have <strong># credit</strong> left.} other {You have <strong># credits</strong> left.}}",
   terms:
-    "{count, plural, one {By creating your CV, you accept our <termsLink>terms and conditions</termsLink>. You have <strong># document</strong>.} other {By creating your CVs, you accept our <termsLink>terms and conditions</termsLink>. You have <strong># documents</strong>.}}",
+    "{count, plural, one {By publishing your post, you accept our <termsLink>terms and conditions</termsLink>. You have <strong># comment</strong>.} other {By publishing your posts, you accept our <termsLink>terms and conditions</termsLink>. You have <strong># comments</strong>.}}",
 };
 
 // Corpus WITHOUT markup, for parity with @inlang/plugin-icu1.

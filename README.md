@@ -27,14 +27,14 @@ as a dependency. Add it to your `project.inlang/settings.json`:
 Catalogs are JSON maps of `key → ICU string`, one file per locale:
 
 ```json
-{ "resumeCount": "{count, plural, one {Vous avez <strong># CV</strong>.} other {Vous avez <strong># CV</strong>.}}" }
+{ "messageCount": "{count, plural, one {Vous avez <strong># nouveau message</strong>.} other {Vous avez <strong># nouveaux messages</strong>.}}" }
 ```
 
 ## Render (Paraglide + React)
 
 ```tsx
 <ParaglideMessage
-  message={m.resumeCount}
+  message={m.messageCount}
   inputs={{ count }}
   markup={{ strong: ({ children }) => <strong>{children}</strong> }}
 />
