@@ -22,7 +22,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 22 # staged publishing requires Node >= 22.14
+          node-version: 24 # Active LTS; staged publishing requires Node >= 22.14
           cache: pnpm
           registry-url: "https://registry.npmjs.org"
       - run: pnpm install --frozen-lockfile
