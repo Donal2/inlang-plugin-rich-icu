@@ -18,9 +18,9 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
         with:
           node-version: 22 # staged publishing requires Node >= 22.14
           cache: pnpm
@@ -31,4 +31,4 @@ jobs:
       # OIDC + trusted publisher: no NODE_AUTH_TOKEN; provenance automatic.
       # Puts the version in staging — approve afterwards with 2FA.
       - run: npm stage publish
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
