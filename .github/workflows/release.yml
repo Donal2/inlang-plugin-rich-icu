@@ -1,12 +1,10 @@
 name: Release
-# npm publish via OIDC Trusted Publisher (no NPM_TOKEN stored).
-# Prerequisites (configure once on npmjs.com AFTER the local v0.1.0 bootstrap):
-#   1. the package `inlang-plugin-rich-icu` already exists (published locally: `npm login` 2FA then `npm publish --access public`);
-#   2. Trusted Publisher enabled on the package → GitHub repo + this workflow;
-#   3. staged publishing enabled on the package.
-# This workflow puts the version in STAGING (not public). A maintainer must then
-# approve it with 2FA: `npm stage approve <id>` (or the button on npmjs.com).
-# See https://docs.npmjs.com/staged-publishing#approve-a-staged-package
+# Fully automated npm publish via OIDC Trusted Publisher (no NPM_TOKEN, no 2FA).
+# The OIDC token issued to this workflow is the proof-of-presence, so the publish
+# goes PUBLIC directly — no staging, no manual approval. Provenance is generated
+# automatically. See https://docs.npmjs.com/trusted-publishers
+# Prerequisite (configured once on npmjs.com): Trusted Publisher enabled on the
+# package → this GitHub repo + this workflow filename, with "Allow npm publish".
 on:
   push:
     tags:
@@ -22,13 +20,12 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 24 # Active LTS; staged publishing requires Node >= 22.14
+          node-version: 24 # Active LTS
           cache: pnpm
           registry-url: "https://registry.npmjs.org"
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - run: npm install -g npm@latest # staged publishing requires npm >= 11.15
-      # OIDC + trusted publisher: no NODE_AUTH_TOKEN; provenance automatic.
-      # Puts the version in staging — approve afterwards with 2FA.
-      - run: npm stage publish
+      - run: npm install -g npm@latest # OIDC trusted publishing requires a recent npm
+      # OIDC + trusted publisher: no NODE_AUTH_TOKEN, no 2FA; provenance automatic.
+      - run: npm publish
       - uses: softprops/action-gh-release@v3

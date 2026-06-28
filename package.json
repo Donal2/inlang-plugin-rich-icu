@@ -1,6 +1,6 @@
 {
   "name": "inlang-plugin-rich-icu",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "inlang storage plugin: inline ICU MessageFormat with rich-text markup tags preserved as first-class inlang markup parts.",
   "type": "module",
   "exports": {
